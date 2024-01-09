@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../utils/ErrorHandler";
 
+export const catchAsyncError =
+  (theFunc: any) => (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(theFunc(req, res, next)).catch(next);
+  };
+
 // Catch-all route for handling undefined routes.
 export const catchAllUndefinedRoutes = (
   req: Request,

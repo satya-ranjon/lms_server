@@ -1,6 +1,10 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import {
+  catchAllUndefinedRoutes,
+  globalErrorHandler,
+} from "../middleware/error";
 const app = express();
 
 app.use(express.json({ limit: "50mb" }));
@@ -11,11 +15,10 @@ app.get("/v1/test", (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Test API" });
 });
 
-// unknown routes
-app.all("*", (req: Request, _res: Response, next: NextFunction) => {
-  const err = new Error(`Route ${req.originalUrl} not found!`) as any;
-  err.statusCode = 404;
-  next(err);
-});
+// handling undefined routes
+app.use(catchAllUndefinedRoutes);
+
+// Global error handler
+app.use(globalErrorHandler);
 
 export default app;

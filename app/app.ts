@@ -1,19 +1,21 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
+import morgan from "morgan";
 import {
   catchAllUndefinedRoutes,
   globalErrorHandler,
 } from "../middleware/error";
+import userRouter from "../routes/user.route";
 const app = express();
 
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
+app.use(morgan("combined"));
 
-app.get("/v1/test", (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, message: "Test API" });
-});
+// router
+app.use("/user/v1", userRouter);
 
 // handling undefined routes
 app.use(catchAllUndefinedRoutes);

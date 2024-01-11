@@ -3,7 +3,7 @@ import { catchAsyncError } from "../middleware/error";
 import userModel from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import sendMail from "../utils/sendMail";
-import { createActivationToken } from "../services/auth.services";
+import { createActivationToken } from "../services/user.services";
 
 // Register user
 interface IRegistration {

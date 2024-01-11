@@ -2,13 +2,15 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
+import { configDotenv } from "dotenv";
 import {
   catchAllUndefinedRoutes,
   globalErrorHandler,
 } from "../middleware/error";
 import userRouter from "../routes/user.route";
-const app = express();
+configDotenv();
 
+const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CORS_ORIGIN }));

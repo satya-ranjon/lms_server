@@ -72,7 +72,9 @@ userSchema.pre<IUser>("save", async function (next) {
 // Sign Access token
 userSchema.methods.SignAccessToken = function () {
   try {
-    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET || "");
+    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET || "", {
+      expiresIn: "5m",
+    });
   } catch (error) {
     throw new Error("Error signing access token");
   }
@@ -81,7 +83,9 @@ userSchema.methods.SignAccessToken = function () {
 // Sign Refresh token
 userSchema.methods.SignRefreshToken = function () {
   try {
-    return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN_SECRET || "");
+    return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN_SECRET || "", {
+      expiresIn: "3d",
+    });
   } catch (error) {
     throw new Error("Error signing refresh token");
   }

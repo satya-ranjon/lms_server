@@ -17,6 +17,7 @@ export const createActivationToken = (user: any): IActivationToken => {
   return { activationCode, token };
 };
 
+// Checking activation token
 interface ICheckActiveToken {
   isToken: boolean;
   user: IUser;

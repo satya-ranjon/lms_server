@@ -1,4 +1,6 @@
+import { configDotenv } from "dotenv";
 import Redis from "ioredis";
+configDotenv();
 
 const redisClient = () => {
   if (process.env.REDIS_URL) {
@@ -7,5 +9,4 @@ const redisClient = () => {
   }
   throw new Error("Redis connection failed");
 };
-
 export const redis = new Redis(redisClient());

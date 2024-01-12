@@ -8,6 +8,7 @@ import {
   checkActiveToken,
   createActivationToken,
 } from "../services/user.services";
+import { sendToken } from "../utils/jwt";
 
 // Register user
 interface IRegistration {
@@ -94,6 +95,40 @@ export const activateUser = catchAsyncError(
         success: true,
         user: { name: newUser.name, email: newUser.email },
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// LoginUser
+interface ILoginUser {
+  email: string;
+  password: string;
+}
+
+export const loginUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, password } = req.body as ILoginUser;
+
+      if (!email || !password) {
+        return next(
+          new ErrorHandler("Please enter your email and password !", 400)
+        );
+      }
+      const user = await userModel.findOne({ email }).select("+password");
+
+      if (!user) {
+        return next(new ErrorHandler("Invalid email or password !", 400));
+      }
+      const isPasswordMatch = await user.comparePassword(password);
+
+      if (!isPasswordMatch) {
+        return next(new ErrorHandler("Invalid email or password", 400));
+      }
+
+      sendToken(user, 200, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

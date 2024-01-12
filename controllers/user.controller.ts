@@ -1,9 +1,13 @@
+import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { catchAsyncError } from "../middleware/error";
-import userModel from "../models/user.model";
+import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import sendMail from "../utils/sendMail";
-import { createActivationToken } from "../services/user.services";
+import {
+  checkActiveToken,
+  createActivationToken,
+} from "../services/user.services";
 
 // Register user
 interface IRegistration {
@@ -49,6 +53,47 @@ export const registrationUser = catchAsyncError(
       } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
       }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// Activate user
+interface IActivateUser {
+  activateToken: string;
+  activateCode: string;
+}
+
+export const activateUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activateToken, activateCode } = req.body as IActivateUser;
+
+      const { isToken, user } = checkActiveToken(activateToken, activateCode);
+
+      if (!isToken) {
+        return next(new ErrorHandler("Invalid activation code !", 400));
+      }
+
+      const { name, email, password } = user;
+
+      const existUser = await userModel.findOne({ email });
+      console.log(existUser);
+
+      if (existUser as any) {
+        return next(new ErrorHandler("Email already exist !", 400));
+      }
+      const newUser = await userModel.create({
+        name,
+        email,
+        password,
+      });
+
+      res.status(201).json({
+        success: true,
+        user: { name: newUser.name, email: newUser.email },
+      });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

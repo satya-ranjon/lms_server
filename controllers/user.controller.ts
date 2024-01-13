@@ -204,3 +204,5 @@ export const updateAccessToken = catchAsyncError(
     }
   }
 );
+
+// get user
